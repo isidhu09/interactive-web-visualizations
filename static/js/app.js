@@ -1,23 +1,20 @@
-const url = "https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1/14-Interactive-Web-Visualizations/02-Homework/samples.json";
+// const url = "https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1/14-Interactive-Web-Visualizations/02-Homework/samples.json";
 
-// Promise Pending
-const dataPromise = d3.json(url);
-console.log("Data Promise: ", dataPromise);
+// // Promise Pending
+// const dataPromise = d3.json(url);
+// console.log("Data Promise: ", dataPromise);
 
-// Fetch the JSON data and console log it
-d3.json(url).then(function(data) {
-    console.log(data);
-});
+// // Fetch the JSON data and console log it
+// d3.json(url).then(function(data) {
+//     console.log(data);
+// });
 
 
 function init(){
     // code that runs once (only on page load or refresh)
 
     // this checks that our initial function runs.
-    console.log("The Init() function ran")
-
-    // create dropdown/select
-
+    console.log("The Init() function ran");
 
     // run functions to generate plots
     createScatter('940')
@@ -40,7 +37,38 @@ function optionChanged(newID){
 
 function createScatter(id){
     // code that makes scatter plot at id='bubble'
+    d3.json(url).then(function(samplesData){
+        let selectData = samplesData.samples.filter(function(sample){
+            return sample.id == id;
+        });
+        let output = selectData[0];
+        console.log(selectData);
+        console.log(output);
 
+        topArr = []
+        for (i=0; i<output.sample_values.length; i++){
+            topArr.push({
+                id: output.otu_ids[i],
+                value: output.sample_values[i],
+                lable: output.otu_labels[i]
+            });
+        }
+        console.log(topArr);
+
+        let sortArr = topArr.sort((a,b) => b.value-a.value).slice(0,10);
+        console.log(sortArr)
+        
+        // Plot chart - Bar
+        let bubble = [{
+            type: 'bar',
+            x: sortArr.map(row=>row.value),
+            y: sortArr.map(row=>row.id),
+            text: sortArr.map(row=>row.lable),
+            orientation: 'h'
+            }];
+        
+        Plotly.newPlot('bar', bar);
+    });
     // checking to see if function is running
     console.log(`This function generates scatter plot of ${id} `)
 }
@@ -48,12 +76,60 @@ function createScatter(id){
 function createBar(id){
     // code that makes bar chart at id='bar'
 
+    d3.json(url).then(function(samplesData){
+        let selectData = samplesData.samples.filter(function(sample){
+            return sample.id == id;
+        });
+        let output = selectData[0];
+        console.log(selectData);
+        console.log(output);
+
+        topArr = []
+        for (i=0; i<output.sample_values.length; i++){
+            topArr.push({
+                id: output.otu_ids[i],
+                value: output.sample_values[i],
+                lable: output.otu_labels[i]
+            });
+        }
+        console.log(topArr);
+
+        let sortArr = topArr.sort((a,b) => b.value-a.value).slice(0,10);
+        console.log(sortArr)
+        
+        // Plot chart - Bar
+        let bar = [{
+            type: 'bar',
+            x: sortArr.map(row=>row.value),
+            y: sortArr.map(row=>row.id),
+            text: sortArr.map(row=>row.lable),
+            orientation: 'h'
+            }];
+        
+        Plotly.newPlot('bar', bar);
+    });
     // checking to see if function is running
-    console.log(`This function generates bar chart of ${id} `)}
+    console.log(`This function generates bar chart of ${id} `)
+}
 
 function createSummary(id){
     // code that makes list, paragraph, text/linebreaks at id='sample-meta'
+    d3.json(url).then(function(data){
+        let info = data.metadata;
+        console.log(info)
+        let selectedID = info.filter(function(selected){
+            return selected.id == id
+        })
+        console.log(selectedID)
+        let table = d3.select('#sample-metadata');
 
+        Object.entries(selectedID[0]).forEach(([key,value]) => {
+            var row = table.append('tr');
+            var cell = table.append('td');
+            cell.text(key.toUpperCase() + `: ${value}`)
+            var cell = row.append('td');
+        });
+    });
     // checking to see if function is running
     console.log(`This function generates summary info of ${id} `)
 }
