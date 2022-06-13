@@ -60,19 +60,21 @@ function createScatter(id){
         
         // Plot chart - Bubble
         let bubble = [{
-            x: [1, 2, 3, 4],
-            y: [10, 11, 12, 13],
+            x: output.otu_ids,
+            y: output.sample_values,
+            text: output.otu_labels,
             mode: 'markers',
             marker: {
-            size: [40, 60, 80, 100]
+                size: output.sample_values,
+                color:output.otu_ids,
             }
-            }];
+        }];
         
         let layout = {
             width: window.width
-        }
+        };
         
-        Plotly.newPlot('bubble', bubble,layout);
+        Plotly.newPlot('bubble', bubble, layout);
     });
     // checking to see if function is running
     console.log(`This function generates scatter plot of ${id} `)
@@ -109,8 +111,8 @@ function createBar(id){
             y: sortArr.map(row=>row.id),
             text: sortArr.map(row=>row.lable),
             orientation: 'h'
-            }];
-        
+        }];
+
         Plotly.newPlot('bar', bar);
     });
     // checking to see if function is running
@@ -135,6 +137,39 @@ function createSummary(id){
             var cell = row.append('td');
         });
     });
+
+    let data = [{
+            domain: { x: [0,1], y: [0, 1] },
+            value:4,
+            title: { 
+                text: `<span style='font-size:0.9em'>Belly Button Washing Frequency<br>Scrubs per Week</span>`
+            },
+            type: "indicator",
+            mode: "gauge+number",
+            gauge: {
+                axis: {
+                    range: [null, 9]
+                },
+                steps: [
+                    {range: [0,1], color: '#FF0000'},
+                    {range: [1,2], color: '#FF6347'},
+                    {range: [2,3], color: '#FF8C00'},
+                    {range: [3,4], color: '#DAA520'},
+                    {range: [4,5], color: '#FFD700'},
+                    {range: [5,6], color: '#FFFF00'},
+                    {range: [6,7], color: '#9ACD32'},
+                    {range: [7,8], color: '#ADFF2F'},
+                    {range: [8,9], color: '#00FF00'}
+                ],
+            }
+    }];
+    
+    let layout = {
+        margin: { t: 0, b: 0 } 
+    };
+
+    Plotly.newPlot('gauge', data, layout);
+
     // checking to see if function is running
     console.log(`This function generates summary info of ${id} `)
 }
