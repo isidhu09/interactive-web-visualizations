@@ -104,12 +104,14 @@ function createBar(id){
         let sortArr = topArr.sort((a,b) => b.value-a.value).slice(0,10);
         console.log(sortArr)
         
+        let revArr = sortArr.sort((a,b) => a.value-b.value);
+
         // Plot chart - Bar
         let bar = [{
             type: 'bar',
-            x: sortArr.map(row=>row.value),
-            y: sortArr.map(row=>row.id),
-            text: sortArr.map(row=>row.lable),
+            x: revArr.map(row=>row.value),
+            y: revArr.map(row=>"OTU"+row.id),
+            text: revArr.map(row=>row.lable),
             orientation: 'h'
         }];
 
