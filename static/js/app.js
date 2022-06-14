@@ -13,14 +13,30 @@ const url = "https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/
 function init(){
     // code that runs once (only on page load or refresh)
 
+    // create dropdown/select
+    let selector = d3.select('#selDataset');
+
+    d3.json(url).then(function(data){
+        let names = data.names;
+
+        selector.selectAll('option')
+            .data(names)
+            .enter()
+            .append('option')
+            .attr('value', d => d)
+            .text(d => d);
+
+        // Take in the first name upon loading the page
+        let default_ = names[0];
+    
     // this checks that our initial function runs.
     console.log("The Init() function ran");
 
     // run functions to generate plots
-    createScatter('940')
-    createBar('940')
-    createSummary('940')
-
+    createScatter(default_)
+    createBar(default_)
+    createSummary(default_)
+    });
 }
 
 // function that runs whenever the dropdown is changed
@@ -54,11 +70,8 @@ function createScatter(id){
             });
         }
         console.log(topArr);
-
-        let sortArr = topArr.sort((a,b) => b.value-a.value).slice(0,10);
-        console.log(sortArr)
         
-        // Plot chart - Bubble
+        // plot chart - bubble
         let bubble = [{
             x: output.otu_ids,
             y: output.sample_values,
@@ -101,12 +114,14 @@ function createBar(id){
         }
         console.log(topArr);
 
+        // sorting and slicing for top 10
         let sortArr = topArr.sort((a,b) => b.value-a.value).slice(0,10);
         console.log(sortArr)
         
+        // need to reverse the sorte darray for the chart
         let revArr = sortArr.sort((a,b) => a.value-b.value);
 
-        // Plot chart - Bar
+        // plot chart - bar
         let bar = [{
             type: 'bar',
             x: revArr.map(row=>row.value),
@@ -123,29 +138,26 @@ function createBar(id){
 
 function createSummary(id){
     // code that makes list, paragraph, text/linebreaks at id='sample-meta'
-    d3.json(url).then(function(data){
-        let info = data.metadata;
+    d3.json(url).then(function(data2){
+        let info = data2.metadata;
         console.log(info)
         let selectedID = info.filter(function(selected){
             return selected.id == id
         })
         console.log(selectedID)
         let table = d3.select('#sample-metadata');
+        table.html('');
 
         Object.entries(selectedID[0]).forEach(([key,value]) => {
-            var row = table.append('tr');
-            var cell = table.append('td');
-            cell.text(key.toUpperCase() + `: ${value}`)
-            var cell = row.append('td');
+            let row = table.append('tr');
+            let cell = table.append('td');
+            cell.text(key + `: ${value}`)
         });
-    });
 
-    let data = [{
+        let data3 = [{
             domain: { x: [0,1], y: [0, 1] },
-            value:4,
-            title: { 
-                text: `<span style='font-size:0.9em'>Belly Button Washing Frequency<br>Scrubs per Week</span>`
-            },
+            value: selectedID[0].wfreq,
+            title: {text: "<b>Belly Button Washing Frequency</b><br>Scrubs Per Week"},
             type: "indicator",
             mode: "gauge+number",
             gauge: {
@@ -164,13 +176,14 @@ function createSummary(id){
                     {range: [8,9], color: '#00FF00'}
                 ],
             }
-    }];
+        }];
     
-    let layout = {
-        margin: { t: 0, b: 0 } 
-    };
+        let layout = {
+            margin: { t: 0, b: 0 } 
+        };
 
-    Plotly.newPlot('gauge', data, layout);
+        Plotly.newPlot('gauge', data3, layout);
+    });
 
     // checking to see if function is running
     console.log(`This function generates summary info of ${id} `)
