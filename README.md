@@ -34,4 +34,4 @@ Completed the following steps:
 
   * All the plots update when a new sample is selected
   
-App is deploy to GitHub Pages: 
+App is deploy to GitHub Pages: https://isidhu09.github.io/interactive-web-visualizations/
